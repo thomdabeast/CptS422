@@ -1,0 +1,5 @@
+/Users/thomhemenway/Projects/CS422/obj/Debug/.NETPortable,Version=v4.5,Profile=Profile78.AssemblyAttribute.cs
+/Users/thomhemenway/Projects/CS422/bin/Debug/CS422.dll.mdb
+/Users/thomhemenway/Projects/CS422/bin/Debug/CS422.dll
+/Users/thomhemenway/Projects/CS422/obj/Debug/CS422.dll
+/Users/thomhemenway/Projects/CS422/obj/Debug/CS422.dll.mdb

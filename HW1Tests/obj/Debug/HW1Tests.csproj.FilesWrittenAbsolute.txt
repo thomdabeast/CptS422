@@ -1,0 +1,8 @@
+/Users/thomhemenway/Projects/CS422/HW1Tests/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/thomhemenway/Projects/CS422/HW1Tests/bin/Debug/HW1Tests.dll.mdb
+/Users/thomhemenway/Projects/CS422/HW1Tests/bin/Debug/HW1Tests.dll
+/Users/thomhemenway/Projects/CS422/HW1Tests/obj/Debug/HW1Tests.dll
+/Users/thomhemenway/Projects/CS422/HW1Tests/obj/Debug/HW1Tests.dll.mdb
+/Users/thomhemenway/Projects/CS422/HW1Tests/bin/Debug/nunit.framework.dll
+/Users/thomhemenway/Projects/CS422/HW1Tests/bin/Debug/CS422.dll
+/Users/thomhemenway/Projects/CS422/HW1Tests/bin/Debug/CS422.dll.mdb

@@ -1,0 +1,10 @@
+/Users/thomhemenway/Projects/CS422/HW2Tests/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/HW2Tests.dll.mdb
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/HW2Tests.dll
+/Users/thomhemenway/Projects/CS422/HW2Tests/obj/Debug/HW2Tests.dll
+/Users/thomhemenway/Projects/CS422/HW2Tests/obj/Debug/HW2Tests.dll.mdb
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/nunit.framework.dll
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/CS422.dll
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/CS422.dll.mdb
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/PCQueue.dll
+/Users/thomhemenway/Projects/CS422/HW2Tests/bin/Debug/ThreadPoolSleepSorter.dll
