@@ -1,8 +1,0 @@
-#!/bin/sh
-
-mcs -target:library ConcatStream.cs NoSeekMemoryStream.cs
-
-mcs Program.cs -r:ConcatStream.dll
-
-mono Program.exe
-
