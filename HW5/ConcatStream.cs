@@ -175,19 +175,36 @@ namespace CS422
         {
             if(CanSeek)
             {
-                first.Seek(offset, origin);
-                second.Seek(offset, origin);
-
                 switch(origin)
                 {
                     case SeekOrigin.Begin:
-                        this.Position = 0 + offset;
+                        first.Seek(offset, origin);
+                        this.Position = offset;
+                        if (offset > first.Length) second.Seek(offset - first.Length, origin);
                     break;
                     case SeekOrigin.Current:
                         this.Position += offset;
+                        first.Seek(Position, SeekOrigin.Begin);
+                        if (Position > first.Length)
+                        {
+                            second.Seek(Position - first.Length, SeekOrigin.Begin);
+                        }
+                        else
+                        {
+                            second.Seek(0, SeekOrigin.Begin);
+                        }
                     break;
                     case SeekOrigin.End:
                         this.Position = Length + offset;
+                        first.Seek(Position, SeekOrigin.Begin);
+                        if (Position > first.Length)
+                        {
+                            second.Seek(Position - first.Length, SeekOrigin.Begin);
+                        }
+                        else
+                        {
+                            second.Seek(0, SeekOrigin.Begin);
+                        }
                     break;
                     default:
                     break;
