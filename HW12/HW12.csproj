@@ -1,12 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EA44ABEA-58BF-4A14-B06E-91E0DB8A3A1F}</ProjectGuid>
+    <ProjectGuid>{A9F8AE1D-2A82-4E44-9EB0-CD72F61AFA75}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>HW1Tests</RootNamespace>
-    <AssemblyName>HW1Tests</AssemblyName>
+    <RootNamespace>HW12</RootNamespace>
+    <AssemblyName>HW12</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,37 +17,16 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="NumberedTextWriterTest.cs" />
-    <Compile Include="IndexedNumsStreamTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CS422.csproj">
-      <Project>{E1993701-E9AE-4288-9DB3-D59FDA152228}</Project>
-      <Name>CS422</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HW1\HW1.csproj">
-      <Project>{d60b0be9-4dfb-4480-a8b0-03ee06fe96fd}</Project>
-      <Name>HW1</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
+    <Compile Include="ConcatStream.cs" />
+    <Compile Include="NoSeekMemoryStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

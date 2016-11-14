@@ -23,6 +23,22 @@ namespace CS422
             throw new NotSupportedException();
         }
 
+		public override long Position
+		{
+			get
+			{
+				return base.Position;
+			}
+			set
+			{
+				if (Math.Abs(value - Position) > 1)
+				{
+					throw new NotSupportedException();
+				}
+
+				base.Position = value;
+			}
+		}
         //public override int Read(byte[] buffer, int offset, int count)
         //{
             

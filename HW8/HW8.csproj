@@ -37,6 +37,7 @@
     <Compile Include="WebServer.cs" />
     <Compile Include="WebService.cs" />
     <Compile Include="FilesWebService.cs" />
+    <Compile Include="ConcatStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
