@@ -1,5 +1,4 @@
-﻿using CS422;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 
 namespace CS422
