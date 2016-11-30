@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Web;
 
 namespace CS422
 {
@@ -79,7 +80,7 @@ namespace CS422
 			foreach (var dir in directory.GetDirs())
 			{
 				// Need to get rid of '**/{current_dir}/' in uri
-				string uri = ServiceURI + "/" + FullPath.Make(directory, dir.Name).Replace(fileSystem.GetRoot().Name + "/", "");
+				string uri = ServiceURI + "/" + FullPath.Make(directory, Uri.EscapeDataString(dir.Name)).Replace(fileSystem.GetRoot().Name + "/", "");
 
 				builder.Append("<tr><td><a href='" + uri + "'>" + dir.Name + "</a></td></tr>");
 			}
@@ -93,7 +94,7 @@ namespace CS422
 			foreach (var file in directory.GetFiles())
 			{
 				// Need to get rid of '**/{current_dir}/' in uri
-				string uri = ServiceURI + "/" + FullPath.Make(directory, file.Name).Replace(fileSystem.GetRoot().Name + "/", "");
+				string uri = ServiceURI + "/" + FullPath.Make(directory, Uri.EscapeDataString(file.Name)).Replace(fileSystem.GetRoot().Name + "/", "");
 
 				builder.Append("<tr><td><a href='" + uri + "'>" + file.Name + "</a></td></tr>");
 			}
@@ -171,21 +172,21 @@ namespace CS422
 					}
 				}
 
-				using (Stream stream = File.Open(FullPath.Make(currentDir, path[path.Length - 1]), FileMode.Create))
-				{
-					byte[] buffer = new byte[2048];
-					int bytesRead = 0, prevRead = 0;
+				File422 file = currentDir.CreateFile(path[path.Length - 1]);
 
-					while ((bytesRead = req.Body.Read(buffer, 0, buffer.Length)) > 0)
+				using (Stream stream = file.OpenReadWrite())
+				{
+					byte[] buffer = new byte[1024 * 8];
+					int bytesRead = 0, size = int.Parse(req.Headers["content-length"]), totalRead = 0;
+
+					while (totalRead < size)
 					{
-						if (prevRead < int.Parse(req.Headers["content-length"]))
-						{
-							stream.Write(buffer, 0, bytesRead);
-						}
-						else
-						{
-							break;
-						}
+						bytesRead = req.Body.Read(buffer, 0, (size - totalRead > buffer.Length) ? buffer.Length : size - totalRead);
+
+						totalRead += bytesRead;
+						Console.WriteLine(totalRead < size);
+							
+						stream.Write(buffer, 0, (bytesRead < size) ? bytesRead : size);
 					}
 				}
 
@@ -232,11 +233,15 @@ namespace CS422
 				{
 					// Get the file type and set the content-type to the file type
 					string filename = path[path.Length - 1];
+
 					int dot = filename.LastIndexOf('.');
 					string type = (dot >= 0) ? filename.Substring(dot).ToLower() : "";
 
 					switch (type)
 					{
+						case ".txt":
+							req.Headers["content-type"] = "text/plain";
+							break;
 						case ".xml":
 							req.Headers["content-type"] = "text/xml";
 							break;

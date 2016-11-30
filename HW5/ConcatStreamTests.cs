@@ -1,13 +1,13 @@
 ﻿using CS422;
-using NUnit.Framework;
+//using NUnit.Framework;
 using System.IO;
 
 namespace HW5
 {
-    [TestFixture()]
+    //[TestFixture()]
     class ConcatStreamTests
     {
-        [Test()]
+        //[Test()]
         public void ConcatStreamTest()
         {
             byte[] buffer1 = new byte[10];

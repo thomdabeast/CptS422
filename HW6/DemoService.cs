@@ -25,7 +25,14 @@ namespace CS422
 
 		public override void Handler(WebRequest req)
 		{
-			req.WriteHTMLResponse(string.Format(c_template, req.Method, req.URI, req.Body.Length, "11337255"));
+			try
+			{
+				req.WriteHTMLResponse(string.Format(c_template, req.Method, req.URI, req.Body.Length, "11337255"));
+			}
+			catch (Exception ex)
+			{
+				req.WriteHTMLResponse(string.Format(c_template, req.Method, req.URI, 0, "11337255"));
+			}
 		}
 	}
 }

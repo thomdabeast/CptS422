@@ -120,7 +120,10 @@ namespace CS422
 		{
 			try
 			{
-				return File.Open(FullPath.Make(Parent, Name), FileMode.Open);
+				return new FileStream(FullPath.Make(Parent, Name),
+									   FileMode.OpenOrCreate,
+									   FileAccess.ReadWrite,
+									   FileShare.None);
 			}
 			catch (Exception e)
 			{
@@ -241,7 +244,7 @@ namespace CS422
 
 			try
 			{
-				File.Create(fullPath);
+				File.Create(fullPath).Dispose();
 
 				return new StdFSFile(name, this);
 			}

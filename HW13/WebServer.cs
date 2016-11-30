@@ -151,10 +151,8 @@ namespace CS422
 									return null;
 								}
 
-								Console.WriteLine(request);
-
 								method = first[0];
-								uri = first[1];
+								uri = Uri.UnescapeDataString(first[1]);
 								httpversion = first[2];
 
 								break;
@@ -173,7 +171,7 @@ namespace CS422
 									// Save the body and make WebRequest
 									req = new WebRequest(
 										ref stream, method, uri, httpversion, headers, 
-										new ConcatStream(new MemoryStream(), stream));
+										new ConcatStream(new MemoryStream(0), stream));
 									
 									return req;
 								}

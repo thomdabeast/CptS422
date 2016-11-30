@@ -155,7 +155,9 @@ namespace CS422
 
                         // Additional headers
                         default:
-                            string line = request.ToString().Remove(' ');
+							// CHANGED: Had to change this line to get it to work.
+							// string line = request.ToString().Remove(' ');
+							string line = request.ToString().Replace(" ", "");
                             int seperator = line.IndexOf(":");
 
                             // We have reached the end of the headers, body is starting
@@ -166,7 +168,7 @@ namespace CS422
 
                                 // Save the body and make WebRequest
                                 req = new WebRequest(
-									ref stream, method, uri, httpversion, headers, new ConcatStream(new MemoryStream(), stream));
+									ref stream, method, uri, httpversion, headers, new ConcatStream(new MemoryStream(0), stream));
                                 return req;
                             }
                             else
