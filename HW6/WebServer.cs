@@ -168,7 +168,8 @@ namespace CS422
 
                                 // Save the body and make WebRequest
                                 req = new WebRequest(
-									ref stream, method, uri, httpversion, headers, new ConcatStream(new MemoryStream(0), stream));
+									ref stream, method, uri, httpversion, headers, 
+									new ConcatStream(new MemoryStream(0), stream));
                                 return req;
                             }
                             else

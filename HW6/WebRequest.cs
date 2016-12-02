@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -17,9 +18,15 @@ namespace CS422
 			this.network = network;
 			this.method = method;
 			this.uri = uri;
-			http_version = httpversion;
-			this.headers = headers;
+			http_version = httpversion.Replace("\r\n", "");
 			this.body = body;
+
+			// Convert all header stuff to lower case.
+			this.headers = new Dictionary<string, string>(headers.Count);
+			foreach (var kvp in headers)
+			{
+				this.headers.Add(kvp.Key.ToLower(), kvp.Value.Replace("\r\n", ""));
+			}
 		}
 
 		public string Method
@@ -40,6 +47,11 @@ namespace CS422
 		public Stream Body
 		{
 			get { return body; }
+		}
+
+		public Dictionary<string, string> Headers
+		{
+			get {return headers; }
 		}
 
 		public void WriteNotFoundResponse(string pageHTML)
@@ -70,6 +82,45 @@ namespace CS422
 			network.Write(res, 0, res.Length);
 		}
 
+		public void WritePreBody(int status, long fileLength)
+		{ 
+			StringBuilder response = new StringBuilder();
+
+			// Version
+			response.Append(http_version);
+			response.Append(" ");
+
+			// Status code
+			response.Append(status);
+			response.Append(" ");
+
+			// Reason
+			response.Append("OK\r\n");
+
+			// Headers
+			headers["content-length"] = fileLength.ToString();
+			foreach (var kvp in headers)
+			{
+				response.Append(kvp.Key + ":" + kvp.Value + "\r\n");
+			}
+
+			// Body
+			response.Append("\r\n");
+
+			string resp = response.ToString();
+
+			byte[] res = Encoding.ASCII.GetBytes(resp);
+
+			network.Write(res, 0, res.Length);
+		}
+
+		public bool WriteFile(byte[] buffer, int offset, int length)
+		{
+			network.Write(buffer, offset, length);
+
+			return true;
+		}
+
 		public bool WriteHTMLResponse(string htmlString)
 		{
 			StringBuilder response = new StringBuilder();
@@ -86,8 +137,11 @@ namespace CS422
 			response.Append("OK\r\n");
 
 			// Headers
-			response.Append("Content-Type: text/html\r\n");
-			response.Append("Content-Length: " + htmlString.Length + "\r\n");
+			headers["content-length"] = htmlString.Length.ToString();
+			foreach (var kvp in headers)
+			{
+				response.Append(kvp.Key + ":" + kvp.Value + "\r\n");
+			}
 
 			// Body
 			response.Append("\r\n");
