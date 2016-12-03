@@ -168,7 +168,7 @@ namespace CS422
 		{
 			if (!recursive)
 			{
-				return File.Exists(name);
+				return File.Exists(FullPath.Make(this, name));
 			}
 
 			// Recursive

@@ -16,6 +16,7 @@ namespace CS422
 
         static List<WebService> services = new List<WebService>();
         static ThreadPool threadPool = new ThreadPool();
+		static TcpListener server;
 
 		public static bool Start(int port, int number_threads)
 		{
@@ -23,58 +24,65 @@ namespace CS422
 			new Thread(() =>
 			{
                 // Init and start server
-                TcpListener listener = new TcpListener(IPAddress.Any, port);
-                listener.Start();
+                server = new TcpListener(IPAddress.Any, port);
+                server.Start();
 
                 threadPool.Start((ushort)number_threads);
 
-                while (true)
+				while (true)
 				{
-					TcpClient client = listener.AcceptTcpClient();
+					TcpClient client;
+					try
+					{
+						client = server.AcceptTcpClient();
+					}
+					catch
+					{
+						break;
+					}
 
-                    // Make thread task function and add it to the ThreadPool
-                    threadPool.AddTask(() =>
-                    {
-                        WebRequest req = BuildRequest(client);
+					// Make thread task function and add it to the ThreadPool
+					threadPool.AddTask(() =>
+					{
+						WebRequest req = BuildRequest(client);
 
-                        // Invalid request object, close connection.
-                        if (null != req)
-                        {
-                            // Handle that request
-                            // Find services that will handle the request URI
-                            bool foundService = false;
-                            int longestPrefix = 0;
-                            WebService serviceToUse = null;
+						// Invalid request object, close connection.
+						if (null != req)
+						{
+							// Handle that request
+							// Find services that will handle the request URI
+							bool foundService = false;
+							int longestPrefix = 0;
+							WebService serviceToUse = null;
 
-                            foreach (var service in services)
-                            {
-                                if (req.URI.StartsWith(service.ServiceURI))
-                                {
-                                    // We'll select the service that has a longer prefix of the request URI and use it
-                                    if (service.ServiceURI.Length > longestPrefix)
-                                    {
-                                        longestPrefix = service.ServiceURI.Length;
-                                        serviceToUse = service;
-                                    }
-                                }
-                            }
+							foreach (var service in services)
+							{
+								if (req.URI.StartsWith(service.ServiceURI))
+								{
+									// We'll select the service that has a longer prefix of the request URI and use it
+									if (service.ServiceURI.Length > longestPrefix)
+									{
+										longestPrefix = service.ServiceURI.Length;
+										serviceToUse = service;
+									}
+								}
+							}
 
-                            if (null == serviceToUse)
-                            {
-                                // send 404 reponse
-                                req.WriteNotFoundResponse("");
-                            }
-                            else
-                            {
-                                // "Handle" request
-                                serviceToUse.Handler(req);
-                            }
-                        }
+							if (null == serviceToUse)
+							{
+								// send 404 reponse
+								req.WriteNotFoundResponse("");
+							}
+							else
+							{
+								// "Handle" request
+								serviceToUse.Handler(req);
+							}
+						}
 
-                        client.Close();
-                    });
+						client.Close();
+					});
 				}
-
 			}).Start();
 
             return true;
@@ -113,88 +121,95 @@ namespace CS422
 			readTimeout.Enabled = true;
 			requestTimeout.Enabled = true;
 
-            // Read byte by byte
-            while ((buffer = stream.ReadByte()) >= 0)
-            {
-				// Stop the read timeout
-				readTimeout.Stop();
-
-				// Our first data threshold
-				if (part == 0 && ++bytesRead >= FIRST_THRESHOLD)
+			// Read byte by byte
+			try
+			{
+				while ((buffer = stream.ReadByte()) >= 0)
 				{
-					client.Close();
-					return null;
-				}
+					// Stop the read timeout
+					readTimeout.Stop();
 
-                char letter = Encoding.ASCII.GetChars(new byte[] { (byte)buffer })[0];
-                request.Append(letter);
+					// Our first data threshold
+					if (part == 0 && ++bytesRead >= FIRST_THRESHOLD)
+					{
+						client.Close();
+						return null;
+					}
 
-                // Read line by line
-                if (letter == '\n')
-				{
-                    switch (part)
-                    {
-                        // METHOD URL HTTPVERSION
-                        case 0:
-                            string[] first = request.ToString().Split(' ');
+					char letter = Encoding.ASCII.GetChars(new byte[] { (byte)buffer })[0];
+					request.Append(letter);
 
-                            // Invalid request
-                            if (first.Length != 3 && (first[0] != "GET" && first[0] != "POST") ||
-                                (first[1] == "") ||
-                                (first[2] != "HTTP/1.1\r\n"))
-                            {
-                                return null;
-                            }
-                            else
-                            {
-                                method = first[0];
-                                uri = first[1];
-                                httpversion = first[2];
-                            }
-                        break;
+					// Read line by line
+					if (letter == '\n')
+					{
+						switch (part)
+						{
+							// METHOD URL HTTPVERSION
+							case 0:
+								string[] first = request.ToString().Split(' ');
 
-                        // Additional headers
-                        default:
-							// CHANGED: Had to change this line to get it to work.
-							// string line = request.ToString().Remove(' ');
-							string line = request.ToString().Replace(" ", "");
-                            int seperator = line.IndexOf(":");
-
-                            // We have reached the end of the headers, body is starting
-                            if (seperator == -1)
-                            {
-								// Stop the request timer
-								requestTimeout.Stop();
-
-                                // Save the body and make WebRequest
-                                req = new WebRequest(
-									ref stream, method, uri, httpversion, headers, 
-									new ConcatStream(new MemoryStream(0), stream));
-                                return req;
-                            }
-                            else
-                            {// Get headers
-							 // Second data threshold
-								if (bytesRead >= SECOND_THRESHOLD)
+								// Invalid request
+								if (first.Length != 3 && (first[0] != "GET" && first[0] != "POST") ||
+									(first[1] == "") ||
+									(first[2] != "HTTP/1.1\r\n"))
 								{
-									client.Close();
 									return null;
 								}
+								else
+								{
+									method = first[0];
+									uri = first[1];
+									httpversion = first[2];
+								}
+								break;
 
-                                string name = line.Substring(0, seperator);
-                                string value = line.Substring(seperator);
+							// Additional headers
+							default:
+								// CHANGED: Had to change this line to get it to work.
+								// string line = request.ToString().Remove(' ');
+								string line = request.ToString().Replace(" ", "");
+								int seperator = line.IndexOf(":");
 
-                                headers.Add(name, value);
-                            }
-                        break;
-                    }
+								// We have reached the end of the headers, body is starting
+								if (seperator == -1)
+								{
+									// Stop the request timer
+									requestTimeout.Stop();
 
-                    // Clear the string builder to get ready for the next part of the header.
-                    request.Clear();
-                    part++;
-                    
-                }
-            }
+									// Save the body and make WebRequest
+									req = new WebRequest(
+										ref stream, method, uri, httpversion, headers,
+										new ConcatStream(new MemoryStream(0), stream));
+									return req;
+								}
+								else
+								{// Get headers
+								 // Second data threshold
+									if (bytesRead >= SECOND_THRESHOLD)
+									{
+										client.Close();
+										return null;
+									}
+
+									string name = line.Substring(0, seperator);
+									string value = line.Substring(seperator);
+
+									headers.Add(name, value);
+								}
+								break;
+						}
+
+						// Clear the string builder to get ready for the next part of the header.
+						request.Clear();
+						part++;
+
+					}
+				}
+			}
+			catch (IOException)
+			{
+				req = null;
+			}
 
             return req;
         }
@@ -206,6 +221,8 @@ namespace CS422
 
         public static void Stop()
         {
+			services.Clear();
+			server.Stop();
             threadPool.Dispose();
         }
 	}

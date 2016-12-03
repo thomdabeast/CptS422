@@ -1,18 +1,19 @@
-﻿using System;
+﻿using CS422;
+using System;
 
-namespace CS422
+namespace MasterProgram
 {
-	public class Program
+	class MainClass
 	{
-		public Program()
-		{
-		}
-
 		public static void Main(string[] args)
 		{
 			WebServer.AddService(new DemoService());
 
 			WebServer.Start(3000, 10);
+
+			Console.ReadKey();
+
+			WebServer.Stop();
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace CS422
 {
-	class DemoService : WebService
+	public class DemoService : WebService
 	{
 		private const string c_template =
 			 "<html>This is the response to the request:<br>" +

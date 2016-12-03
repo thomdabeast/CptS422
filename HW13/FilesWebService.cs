@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Web;
 
@@ -11,37 +12,38 @@ namespace CS422
         FileSys422 fileSystem;
 		bool allowUploads = true;
 		const string SCRIPT = @"<script>
-					function selectedFileChanged(fileInput, urlPrefix)
-					{
-					 document.getElementById('uploadHdr').innerText = 'Uploading ' + fileInput.files[0].name + '...';
-					 // Need XMLHttpRequest to do the upload
-					 if (!window.XMLHttpRequest)
-					 {
-					 alert('Your browser does not support XMLHttpRequest. Please update your browser.');
-					 return;
-					 }
-					 // Hide the file selection controls while we upload
-					 var uploadControl = document.getElementById('uploader');
-					 if (uploadControl)
-					 {
-					 uploadControl.style.visibility = 'hidden';
-					 }
-					 // Build a URL for the request
-					 if (urlPrefix.lastIndexOf('/') != urlPrefix.length - 1)
-					 {
-					 urlPrefix += '/';
-					 }
-					var uploadURL = urlPrefix + fileInput.files[0].name;
-					 // Create the service request object
-					 var req = new XMLHttpRequest();
-					 req.open('PUT', uploadURL);
-					 req.onreadystatechange = function()
-					 {
-					 document.getElementById('uploadHdr').innerText = 'Upload (request status == ' + req.status + ')';
-					 };
-					 req.send(fileInput.files[0]);
-					}
-					</script>";
+			function selectedFileChanged(fileInput, urlPrefix)
+			{
+			document.getElementById('uploadHdr').innerText = 'Uploading ' + fileInput.files[0].name + '...';
+			// Need XMLHttpRequest to do the upload
+			if (!window.XMLHttpRequest)
+			{
+			alert('Your browser does not support XMLHttpRequest. Please update your browser.');
+			return;
+			}
+			// Hide the file selection controls while we upload
+			var uploadControl = document.getElementById('uploader');
+			if (uploadControl)
+			{
+			uploadControl.style.visibility = 'hidden';
+			}
+			// Build a URL for the request
+			if (urlPrefix.lastIndexOf('/') != urlPrefix.length - 1)
+			{
+			urlPrefix += '/';
+			}
+			var uploadURL = urlPrefix + fileInput.files[0].name;
+			// Create the service request object
+			var req = new XMLHttpRequest();
+			req.open('PUT', uploadURL);
+			req.onreadystatechange = function()
+			{
+			document.getElementById('uploadHdr').innerText = 'Upload (request status == ' + req.status + ')';
+			setTimeout(function() {location.reload();}, 1000);
+			};
+			req.send(fileInput.files[0]);
+			}
+			</script>";
 
         public FilesWebService(FileSys422 sys)
         {
@@ -119,7 +121,7 @@ namespace CS422
 		// TODO: Integrate bool param some how?
 		string GetHREF(Dir422 directory, bool v)
 		{
-			return ServiceURI + "/" + FullPath.Make(directory).Replace(fileSystem.GetRoot().Name, "");
+			return ServiceURI + FullPath.Make(directory).Replace(fileSystem.GetRoot().Name, "") + "/";
 		}
 
 		public override void Handler(WebRequest req)
@@ -152,45 +154,45 @@ namespace CS422
 		{
 			string[] path = req.URI.Split('/');
 
+			Dir422 currentDir = fileSystem.GetRoot();
+
+			// Don't include last element because thats the file name
+			for (int i = 2; i < path.Length - 1; i++)
+			{
+				// Fix '/' at end of URI 
+				if (path[i] != "")
+				{
+					currentDir = currentDir.GetDir(path[i]);
+				}
+			}
+
 			// The file already exists
-			if (fileSystem.GetRoot().ContainsFile(path[path.Length - 1], true))
+			if (currentDir.ContainsFile(path[path.Length - 1], false))
 			{
 				req.WriteNotFoundResponse("File exists");
 			}
 			// Make file
 			else
 			{
-				Dir422 currentDir = fileSystem.GetRoot();
-
-				// Don't include last element because thats the file name
-				for (int i = 2; i < path.Length - 1; i++)
-				{
-					// Fix '/' at end of URI 
-					if (path[i] != "")
-					{
-						currentDir = currentDir.GetDir(path[i]);
-					}
-				}
-
 				File422 file = currentDir.CreateFile(path[path.Length - 1]);
 
 				using (Stream stream = file.OpenReadWrite())
 				{
 					byte[] buffer = new byte[1024 * 8];
-					int bytesRead = 0, size = int.Parse(req.Headers["content-length"]), totalRead = 0;
+					int bytesRead = 0;
+					long size = long.Parse(req.Headers["content-length"]), totalRead = 0;
 
 					while (totalRead < size)
 					{
-						bytesRead = req.Body.Read(buffer, 0, (size - totalRead > buffer.Length) ? buffer.Length : size - totalRead);
+						bytesRead = req.Body.Read(buffer, 0, (size - totalRead > buffer.Length) ? buffer.Length : (int)(size - totalRead));
 
 						totalRead += bytesRead;
-						Console.WriteLine(totalRead < size);
 							
-						stream.Write(buffer, 0, (bytesRead < size) ? bytesRead : size);
+						stream.Write(buffer, 0, (bytesRead < size) ? bytesRead : (int)size);
+
 					}
 				}
 
-				Console.WriteLine("File uploaded");
 				req.WriteHTMLResponse("file uploaded!");
 			}
 		}
@@ -328,7 +330,7 @@ namespace CS422
 				else
 				{
 					// The URI maps to something that doesn’t exist in the file system
-					req.WriteNotFoundResponse("<h1>404</h1><br><b>Content not found</b>");
+					req.WriteNotFoundResponse("<div style='text-align: center'><h1>404</h1><br><b>Content not found</b></div>");
 				}
 			}
 			catch (Exception)

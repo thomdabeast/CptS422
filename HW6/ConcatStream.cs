@@ -19,7 +19,7 @@ namespace CS422
             Construct(first, second, length);
         }
         
-        private void Construct(Stream first, Stream second, long length = -1)
+        void Construct(Stream first, Stream second, long length = -1)
         {
             try 
             {

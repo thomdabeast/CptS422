@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D59B0EA9-024F-4DE0-87D6-FC16EA19166F}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>HW13</RootNamespace>
-    <AssemblyName>HW13</AssemblyName>
+    <ProjectGuid>{12433BBA-262A-4A66-9D5F-73F719DD714C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HW7Tests</RootNamespace>
+    <AssemblyName>HW7Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -17,30 +17,30 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Numerics" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ConcatStream.cs" />
-    <Compile Include="FilesWebService.cs" />
-    <Compile Include="FileSystemDefs.cs" />
-    <Compile Include="ThreadPool.cs" />
-    <Compile Include="WebRequest.cs" />
-    <Compile Include="WebServer.cs" />
-    <Compile Include="WebService.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HW6\HW6.csproj">
+      <Project>{2BE3E04D-65F4-439D-ACCC-96FE4D1BD63D}</Project>
+      <Name>HW6</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
