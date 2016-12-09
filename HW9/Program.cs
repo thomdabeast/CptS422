@@ -15,8 +15,7 @@ namespace HW9
 
 			WebServer.Start(3000, 10);
 
-
-			Console.ReadKey();
+			WebServer.Stop();
 		}
 	}
 }

@@ -153,7 +153,7 @@ namespace CS422
 								else
 								{
 									method = first[0];
-									uri = first[1];
+									uri = Uri.UnescapeDataString(first[1]);
 									httpversion = first[2];
 								}
 								break;

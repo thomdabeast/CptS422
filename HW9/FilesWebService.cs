@@ -248,6 +248,9 @@ namespace CS422
 						case ".jpg":
 							req.Headers["content-type"] = "image/jpg";
 							break;
+						case ".jpeg":
+							req.Headers["content-type"] = "image/jpeg";
+							break;
 						case ".png":
 							req.Headers["content-type"] = "image/png";
 							break;

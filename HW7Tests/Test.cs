@@ -44,7 +44,7 @@ namespace CS422
 			using (TcpClient client = new TcpClient("localhost", PORT))
 			{
 				// Wait and let the server close the connection.
-				Thread.Sleep(3 * 1000);
+				Thread.Sleep(5 * 1000);
 
 				Assert.AreEqual(false, client.Connected);
 			}
@@ -56,7 +56,7 @@ namespace CS422
 			using (TcpClient client = new TcpClient("localhost", PORT))
 			{
 				client.GetStream().Write(new byte[4 * 1024], 0, 4 * 1024);
-				Thread.Sleep(100);
+				Thread.Sleep(200);
 
 				Assert.AreEqual(false, client.Connected);
 			}
